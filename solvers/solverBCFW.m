@@ -274,6 +274,7 @@ for p=1:options.num_passes
                               / ( (wMat(:,i) - w_s)'*(wMat(:,i) - w_s) +eps);
                      % +eps is to avoid division by zero...
             gamma = max(0,min(1,gamma_opt)); % truncate on [0,1]
+%	    fprintf('Gamma = %f		Formula = %f \n', gamma, 2*n/(k + 2*n))
         else
             % we use the fixed step-size schedule (as in Algorithm 3)
             gamma = 2*n/(k+2*n);
@@ -294,14 +295,13 @@ for p=1:options.num_passes
         ellMat(i) = (1-gamma)*ellMat(i) + gamma*ell_s;
         ell = ell + ellMat(i); % this is ell^(k+1) = ell^(k)-ell_i^(k)+ell_i^(k+1)
     
-        % 9) Optionally, update the weighted average:
-%        if (options.do_weighted_averaging)
-%%	    fprintf('Doing weighted averaging')
-%            rho = 2/(k+2); % resuls in each iterate w^(k) weighted proportional to k
-%            wAvg = (1-rho)*wAvg + rho*model.w;
-%            lAvg = (1-rho)*lAvg + rho*ell; % this is required to compute statistics on wAvg -- such as the dual objective
-%        end
-        
+       % 9) Optionally, update the weighted average:
+        if (options.do_weighted_averaging)
+            rho = 2/(k+2); % resuls in each iterate w^(k) weighted proportional to k
+            wAvg = (1-rho)*wAvg + rho*model.w;
+            lAvg = (1-rho)*lAvg + rho*ell; % this is required to compute statistics on wAvg -- such as the dual objective
+        end
+       
         k=k+1;
         
         % debug: compute objective and duality gap. do not use this flag for
@@ -328,12 +328,12 @@ for p=1:options.num_passes
             progress.eff_pass = [progress.eff_pass; k/n];
 	    progress.time = [progress.time; toc];
             progress.train_error = [progress.train_error; train_error];
-	    f = figure();
-	    set(gcf, 'visible', 'off');
-     	    plot(progress.time,  progress.dual, 'b--'); % dual
-	    xlabel('Time (in s)');
-	    ylabel('Dual objective value');
-	    saveas(f, 'intermediate_dual_plot.png');
+%	    f = figure();
+%	    set(gcf, 'visible', 'off');
+%     	    plot(progress.time,  progress.dual, 'b--'); % dual
+%	    xlabel('Time (in s)');
+%	    ylabel('Dual objective value');
+%	    saveas(f, 'intermediate_dual_plot.png');
             if (isstruct(options.test_data) && isfield(options.test_data, 'patterns'))
                 param_debug = param;
                 param_debug.patterns = options.test_data.patterns;

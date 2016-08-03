@@ -2,9 +2,9 @@ addpath(genpath('../../solvers/'));
 addpath('helpers');
 
 tic
-data_name = 'pritish cifar';
+data_name = 'original cifar';
 
-[patterns_train, labels_train] = loadCIFARdata(data_name, '../../data/', 10000);
+[patterns_train, labels_train] = loadCIFARdata(data_name, '../../data/', 50);
 %S = load('../../data/CIFAR-10_FeatureVec/trainData.mat');
 %patterns_trainArr = S.trainFeatures;
 %labels_trainArr = S.trainLabels;
@@ -24,12 +24,12 @@ param.predictFn = @cifar_predicty;
 
 options = [];
 options.lambda = 0.1;
-options.gap_threshold = 0.01; % duality gap stopping criterion
+options.gap_threshold = 0.1; % duality gap stopping criterion
 options.num_passes = 1000; % max number of passes through data
-options.do_line_search = 1;
+options.do_line_search = 0;
 options.debug = 1; % for displaying more info (makes code about 3x slower)
 options.debug_multiplier = 0;
-options.do_weighted_averaging = 0;
+options.do_weighted_averaging = 1;
 
 %% run the solver
 
@@ -46,7 +46,8 @@ end
 avg_loss = avg_loss / numel(patterns_train);
 fprintf('average loss on the training set: %f.\n', avg_loss);
 toc
-%% plot the progress of the solver
+
+% plot the progress of the solver
 %plot(progress.eff_pass, progress.primal, 'r-'); % primal
 %hold on;
 plot(progress.eff_pass, progress.dual, 'b--'); % dual
